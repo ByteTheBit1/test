@@ -27,7 +27,14 @@ router.get('/:AreaName_req/:Resolution_req/:Year_req/:Month_req/:Day_req',(req,r
         "Day" : "1",
         "DateTimeUTC" : "2018-01-01 01:00:00.0000000",
         "ActualTotalLoadValue" : "4767.82",
-        "UpdateTimeUTC" : "2018-09-04 11:16:37.0000000"
+        "UpdateTimeUTC" : "2018-09-04 11:16:37.0000000",
+
+
+        "Area= ": Area,
+        "Resolution ": Reso,
+        "Year=   ": Y,
+        "Month= ": M,
+        "Day= ":D
          });
 
    });
