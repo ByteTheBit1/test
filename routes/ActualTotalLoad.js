@@ -8,7 +8,7 @@ const ResolutionCodeModel = require('../models/ResolutionCodeModel');
 //GET METHOD route -> Year/Month/Day
 router.get('/:AreaName_req/:Resolution_req/:Year_req/:Month_req/:Day_req',(req,res,next)=>{
           const Area=req.params.AreaName_req;
-          const Reso=req.paramsResolution_req;
+          const Reso=req.params.Resolution_req;
           const Y   =req.params.Year_req;
           const M   =req.params.Month_req;
           const D   =req.params.Day_req;
@@ -31,7 +31,7 @@ router.get('/:AreaName_req/:Resolution_req/:Year_req/:Month_req/:Day_req',(req,r
 
 
         "Area= ": Area,
-        "Resolution ": Reso,
+        "Resolution=": Reso,
         "Year=   ": Y,
         "Month= ": M,
         "Day= ":D
