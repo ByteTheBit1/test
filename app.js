@@ -8,7 +8,7 @@ app.use(bodyParser.json());
 
 mongoose.connect('mongodb+srv://user:user@cluster0-0pwss.mongodb.net/test?retryWrites=true&w=majority');
 
-// Function to eliminate CORS errors (postman never gets CORS errors).We also grant access to everybody
+/* Function to eliminate CORS errors (postman never gets CORS errors).We also grant access to everybody
 // bodyParser was used
 app.use((req,res,next)=>{
     res.header("Access-Control-Allow-Origin","*");
@@ -20,7 +20,7 @@ app.use((req,res,next)=>{
         res.header('Access-Control-Allow-Methods','PUT,POST,DELETE,PATCH');
         return res.status(200).json({});
     }
-})
+})*/
 
 //morgan is a package for errors
 const morgan = require('morgan');
