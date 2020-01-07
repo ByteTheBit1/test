@@ -87,11 +87,11 @@ router.get('/:AreaName/:Resolution/:Year/:Month/:Day', (req, res) => {
             AreaTypeCode: '$Area_Type_Code.AreaTypeCodeText',
             MapCode:'$Map_Code.MapCodeText',
             ResolutionCode : '$resolution_codes.ResolutionCodeText',
-            Year : '$Year',
-            Month : '$Month',
-            Day : '$Day',
+            Year :   { $toString: "$Year" },
+            Month :  { $toString: "$Month" },
+            Day :    { $toString: "$Day" },
             DateTimeUTC: '$DateTime',
-            ActualTotalLoadValue:"$TotalLoadValue",
+            ActualTotalLoadValue: { $toString: "$TotalLoadValue" },
             UpdateTimeUTC: '$UpdateTime'
           }
         },
