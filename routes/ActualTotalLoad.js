@@ -1,103 +1,326 @@
-const express = require('express');
-const router = express.Router();
-const ActualTotalLoadValueModel = require('../models/ActualTotalLoadModel');
-const mongoose = require('mongoose');
-const ResolutionCodeModel = require('../models/ResolutionCodeModel');
+var express = require('express');
+var app = express();
+
+var router = express.Router();
+var assert = require('assert')
+const URL = 'mongodb+srv://user:user@cluster0-0pwss.mongodb.net/test?retryWrites=true&w=majority'
+const MongoClient = require('mongodb').MongoClient
+//const CircularJSON = require('circular-json');
+//const {parse, stringify} = require('flatted/cjs');
 
 
-//GET METHOD route -> Year/Month/Day
-router.get('/:AreaName_req/:Resolution_req/:Year_req/:Month_req/:Day_req',(req,res,next)=>{
-          const Area=req.params.AreaName_req;
-          const Reso=req.params.Resolution_req;
-          const Y   =req.params.Year_req;
-          const M   =req.params.Month_req;
-          const D   =req.params.Day_req;
 
-          //ActualTotalLoadValueInstance.findOne( { $where : "this. } ) -> continue tomorrow
+// Erotima 1a
+router.get('/:AreaName/:Resolution/:Year/:Month/:Day', (req, res) => {
+  const _AreaName=req.params.AreaName
+  const _Resolution=req.params.Resolution
+  const _Year = parseInt(req.params.Year)
+  const _Month = parseInt(req.params.Month)
+  const _Day = parseInt(req.params.Day)
 
-    res.json({ 
-        "Source" : "entso-e",
-        "Dataset" : "ActualTotalLoad",
-        "AreaName" : "Greece",
-        "AreaTypeCode" : "CTY",
-        "MapCode" : "GR",
-        "ResolutionCode" : "PT60M",
-        "Year" : "2018",
-        "Month" : "1",
-        "Day" : "1",
-        "DateTimeUTC" : "2018-01-01 01:00:00.0000000",
-        "ActualTotalLoadValue" : "4767.82",
-        "UpdateTimeUTC" : "2018-09-04 11:16:37.0000000",
+  MongoClient.connect(URL,{
+    useNewUrlParser: true,
+    useUnifiedTopology: true}, 
+    async (err, client) => {
+      if (err) throw err; 
+      else console.log('connected to db');
+      assert.equal(null, err) 
+      const db = client.db('energy')
+      var collection = db.collection('ActualTotalLoad')
+      const agg = [
+        { 
+          $match : 
+          {
+            AreaName: _AreaName,
+            Day : _Day,
+            Month: _Month,
+            Year: _Year
+          }
+      },
 
+        {
+          $lookup:
+          {
+            from: 'ResolutionCode',
+            localField: 'ResolutionCodeId',
+            foreignField : 'Id',
+            as: "resolution_codes"
+          }
+        },
+        {
+          $unwind: {path : "$resolution_codes"}
+        },
 
-        "Area= ": Area,
-        "Resolution=": Reso,
-        "Year=   ": Y,
-        "Month= ": M,
-        "Day= ":D
-         });
+        { 
+          $match : {'resolution_codes.ResolutionCodeText' : _Resolution}
+        },
+        {
+          $lookup: {
+            from: 'MapCode', 
+            localField: 'MapCodeId', 
+            foreignField: 'Id', 
+            as : 'Map_Code'
+          }
+        }, {
+          $unwind: {
+            path: '$Map_Code'
+          }
+        }, {
+          $lookup: {
+            from: 'AreaTypeCode', 
+            localField: 'AreaTypeCodeId', 
+            foreignField: 'Id', 
+            as: 'Area_Type_Code'
+          }
+        }, {
+          $unwind: {
+            path: '$Area_Type_Code'
+          }
+        }, 
+        {
+          $project : 
+          {
+            _id:0,
+            Source :'entso-e',
+            Dataset :'ActualTotalLoad',
+            AreaName: '$AreaName',
+            AreaTypeCode: '$Area_Type_Code.AreaTypeCodeText',
+            MapCode:'$Map_Code.MapCodeText',
+            ResolutionCode : '$resolution_codes.ResolutionCodeText',
+            Year : '$Year',
+            Month : '$Month',
+            Day : '$Day',
+            DateTimeUTC: '$DateTime',
+            ActualTotalLoadValue:"$TotalLoadValue",
+            UpdateTimeUTC: '$UpdateTime'
+          }
+        },
+        {
+          $sort: {
+            'DateTime': 1
+          }
+        }
+      ];
+      var cursor = collection.aggregate(agg)
 
-   });
-
-//POST METHOD route
-router.post('/:AreaName/:Resolution/:Year/:Month/:Day',(req,res,next)=>{
-    const ActualTotalLoadValueInstance = new ActualTotalLoadValueModel({// we create a new object type ActualTotalLoadModel
-        Id : req.body.Id,
-        EntityCreatedAt : req.body.EntityCreatedAt,
-        EntityModifiedAt : req.body.EntityModifiedAt,
-        ActionTaskID :req.body.ActionTaskID, 
-        Status: req.body.Status, 
-        Year: req.body.Year,
-        Month : req.body.Month,
-        Day : req.body.Day,
-        DateTime : req.body.DateTime,
-        AreaName : req.body.AreaName,
-        UpdateTime : req.body.UpdateTime,
-        TotalLoadValue : req.body.TotalLoadValue,
-        AreaTypeCodeId : req.body.AreaTypeCodeId,
-        AreaCodeId : req.body.AreaCodeId, 
-        ResolutionCodeId : req.body.ResolutionCodeId,
-        MapCodeId : req.body.MapCodeId,
-        RowHash: req.body.RowHash
+      await cursor.toArray((error, result) => {
+        if(error) {
+            return res.status(500).send(error);
+        }
+        res.send(result);
     });
-    product
-    .save()             // save the new instance of TotalLoad in DB
-    .then(result=>{     // just show me the results in the log !!!!DELETE LATER!!!! (for testing onlys)
-        console.log(result);
-    })
-    .catch(err=>{       // catch any potential errors here
-        console.log(err); 
-    })
-    
-    res.status(201).json({
-        message:"New entry was created",
-        entry: ActualTotalLoadValueInstance
+
+  })// connection ends here
+})
+
+
+
+
+
+
+//erotima 1b 
+router.get('/:AreaName/:Resolution/:Year/:Month', (req, res) => {
+  const _AreaName=req.params.AreaName
+  const _Resolution=req.params.Resolution
+  const _Year = parseInt(req.params.Year)
+  const _Month = parseInt(req.params.Month)
+
+  MongoClient.connect(URL,{
+    useNewUrlParser: true,
+    useUnifiedTopology: true}, 
+    async (err, client) => {
+      if (err) throw err; 
+      else console.log('connected to db');
+      assert.equal(null, err) 
+      const db = client.db('energy')
+      var collection = db.collection('ActualTotalLoad')
+      const agg = [
+        {
+          $project :{
+            _id:0,
+            Source :'entso-e',
+            Dataset :'ActualTotalLoad',
+            AreaName: '$AreaName',
+            AreaTypeCode: '$Area_Type_Code.AreaTypeCodeText',
+            MapCode:'$Map_Code.MapCodeText',
+            ResolutionCode : '$resolution_codes.ResolutionCodeText',
+            Year : '$Year',
+            Month : '$Month',
+            Day : '$Day',
+            DateTimeUTC: '$DateTime',
+            ActualTotalLoadValue:"$TotalLoadValue",
+            UpdateTimeUTC: '$UpdateTime'
+
+      }},
+      { 
+        $match : 
+        {
+          AreaName: _AreaName,
+          Day : _Day,
+          Month: _Month,
+          Year: _Year
+        }
+    },
+      {$group: {
+          _id : {Year : _Year, Month : _Month, Day : _Day},
+          ActualTotalLoad : { "$sum" : "$TotalLoadValue"}
+      }},
+      {
+        $lookup:
+        {
+          from: 'ResolutionCode',
+          localField: 'ResolutionCodeId',
+          foreignField : 'Id',
+          as: "resolution_codes"
+        }
+      },
+      {
+        $unwind: {path : "$resolution_codes"}
+      },
+
+      { 
+        $match : {'resolution_codes.ResolutionCodeText' : _Resolution}
+      },
+      {
+        $lookup: {
+          from: 'MapCode', 
+          localField: 'MapCodeId', 
+          foreignField: 'Id', 
+          as : 'Map_Code'
+        }
+      }, {
+        $unwind: {
+          path: '$Map_Code'
+        }
+      }, {
+        $lookup: {
+          from: 'AreaTypeCode', 
+          localField: 'AreaTypeCodeId', 
+          foreignField: 'Id', 
+          as: 'Area_Type_Code'
+        }
+      }, {
+        $unwind: {
+          path: '$Area_Type_Code'
+        }
+      }];
+
+      var cursor = collection.aggregate(agg)
+
+      await cursor.toArray((error, result) => {
+        if(error) {
+            return res.status(500).send(error);
+        }
+        res.send(result);
     });
-});
-// PATCH method route
-router.patch('/:AreaName/:Resolution/:Year/:Month/:Day',  (req, res,next) =>{
-    res.status(200).json({
-  });
-});
 
-//DELETE METHOD route
-router.delete('/:AreaName/:Resolution/:Year/:Month/:Day', (req,res,next)=>{
-    res.status(200).json({
+  })// connection ends here
+})
+
+
+/*
+//erotima 1c
+router.get('/:AreaName/:Resolution/:Year/:Month/:Day', (req, res) => {
+  const _AreaName=req.params.AreaName
+  const _Resolution=req.params.Resolution
+  const _Year = parseInt(req.params.Year)
+  const _Month = parseInt(req.params.Month)
+  const _Day = parseInt(req.params.Day)
+
+  MongoClient.connect(URL,{
+    useNewUrlParser: true,
+    useUnifiedTopology: true}, 
+    async (err, client) => {
+      if (err) throw err; 
+      else console.log('connected to db');
+      assert.equal(null, err) 
+      const db = client.db('energy')
+      var collection = db.collection('ActualTotalLoad')
+      const agg = [
+        { 
+          $match : 
+          {
+            AreaName: _AreaName,
+            Day : _Day,
+            Month: _Month,
+            Year: _Year
+          }
+      },
+
+        {
+          $lookup:
+          {
+            from: 'ResolutionCode',
+            localField: 'ResolutionCodeId',
+            foreignField : 'Id',
+            as: "resolution_codes"
+          }
+        },
+        {
+          $unwind: {path : "$resolution_codes"}
+        },
+
+        { 
+          $match : {'resolution_codes.ResolutionCodeText' : _Resolution}
+        },
+        {
+          $lookup: {
+            from: 'MapCode', 
+            localField: 'MapCodeId', 
+            foreignField: 'Id', 
+            as : 'Map_Code'
+          }
+        }, {
+          $unwind: {
+            path: '$Map_Code'
+          }
+        }, {
+          $lookup: {
+            from: 'AreaTypeCode', 
+            localField: 'AreaTypeCodeId', 
+            foreignField: 'Id', 
+            as: 'Area_Type_Code'
+          }
+        }, {
+          $unwind: {
+            path: '$Area_Type_Code'
+          }
+        }, 
+        {
+          $project : 
+          {
+            _id:0,
+            Source :'entso-e',
+            Dataset :'ActualTotalLoad',
+            AreaName: '$AreaName',
+            AreaTypeCode: '$Area_Type_Code.AreaTypeCodeText',
+            MapCode:'$Map_Code.MapCodeText',
+            ResolutionCode : '$resolution_codes.ResolutionCodeText',
+            Year : '$Year',
+            Month : '$Month',
+            Day : '$Day',
+            DateTimeUTC: '$DateTime',
+            ActualTotalLoadValue:"$TotalLoadValue",
+            UpdateTimeUTC: '$UpdateTime'
+          }
+        },
+        {
+          $sort: {
+            'DateTime': 1
+          }
+        }
+      ];
+      var cursor = collection.aggregate(agg)
+
+      await cursor.toArray((error, result) => {
+        if(error) {
+            return res.status(500).send(error);
+        }
+        res.send(result);
     });
-});
 
-//Querry testing - get id column and then if (id=....) get something
-router.get('/Id',(req,res,next)=>{
-    if(id>4000){
-        res.status(200).json({
-            message:'Just testing the querries'
-        });
-    }
-    else{
-        res.status(200).json({
-        message:"still testing"
-        });
-    }
-});
+  })// connection ends here
+})
 
+*/
 module.exports = router;

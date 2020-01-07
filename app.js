@@ -6,8 +6,11 @@ const mongoose = require('mongoose');
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb+srv://user:user@cluster0-0pwss.mongodb.net/test?retryWrites=true&w=majority');
-
+mongoose.connect('mongodb+srv://user:user@cluster0-0pwss.mongodb.net/energy?retryWrites=true&w=majority');
+/*mongoose.connect('mongodb://localhost/Energy', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }); */
 /* Function to eliminate CORS errors (postman never gets CORS errors).We also grant access to everybody
 // bodyParser was used
 app.use((req,res,next)=>{
@@ -28,12 +31,15 @@ app.use(morgan('dev'));
 
 
 //Declare Routers 
+const test = require('./routes/test');
+app.use('/test',test);
+
 const ActualTotalLoadRouter = require('./routes/ActualTotalLoad');
 const AggregatedGenerationPerTypeRouter = require('./routes/AggregatedGenerationPerType');
 const DayAheadTotalLoadForecastRouter = require('./routes/DayAheadTotalLoadForecast')
-app.use('/ActualTotalLoad',ActualTotalLoadRouter);
-app.use('/DayAheadTotalLoadForecast',DayAheadTotalLoadForecastRouter);
-app.use('/AggregatedGenerationPerType',AggregatedGenerationPerTypeRouter);
+app.use('/energy/api/ActualTotalLoad',ActualTotalLoadRouter);
+app.use('/energy/api/DayAheadTotalLoadForecast',DayAheadTotalLoadForecastRouter);
+app.use('/energy/api/AggregatedGenerationPerType',AggregatedGenerationPerTypeRouter);
 
 // if u reach this line,no router was able to handle the request,so we return an error message.Morgan was used
 app.use((req,res,next)=>{

@@ -1,5 +1,6 @@
 const mongoose=require('mongoose');
-const ActualTotalLoadValueSchema = mongoose.Schema({
+const ActualTotalLoadValueSchema = mongoose.Schema
+({
 
     Id : String,
     EntityCreatedAt : String,
@@ -18,6 +19,9 @@ const ActualTotalLoadValueSchema = mongoose.Schema({
     ResolutionCodeId : String,
     MapCodeId : String,
     RowHash: String
+},
+{ 
+    collection : 'ActualTotalLoad' 
 });
 
 module.exports = mongoose.model("ActualTotalLoad",ActualTotalLoadValueSchema);

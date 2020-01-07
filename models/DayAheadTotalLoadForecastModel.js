@@ -18,6 +18,9 @@ const DayAheadTotalLoadForecastSchema = mongoose.Schema({
     ResolutionCodeId : string, 
     MapCodeId : string, 
     RowHash: string
+},
+{ 
+    collection : 'DayAheadTotalLoadForecast' 
 });
 
 module.exports = mongoose.model("DayAheadTotalLoadForecast",DayAheadTotalLoadForecastSchema);

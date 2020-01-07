@@ -8,6 +8,9 @@
         ProductionTypeText : String,
         ProductionTypeNote : String
 
+},
+{ 
+    collection : 'ProductionType' 
 });
 
 module.exports = mongoose.model("ActualTotalLoad",ActualTotalLoadValueSchema);

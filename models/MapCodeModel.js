@@ -8,6 +8,9 @@
     MapCodeText:String,
     MapCodeNote : String
 
+},
+{ 
+    collection : 'MapCode' 
 });
 
 module.exports = mongoose.model("ActualTotalLoad",ActualTotalLoadValueSchema);

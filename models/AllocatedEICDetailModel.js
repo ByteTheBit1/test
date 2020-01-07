@@ -21,6 +21,9 @@
         IsDeleted : NumberInt,
         AllocatedEICID: String
 
+},
+{ 
+    collection : 'AllocatedEICDetail' 
 });
 
 module.exports = mongoose.model("AllocatedEICDetail",AllocatedEICDetailSchema);

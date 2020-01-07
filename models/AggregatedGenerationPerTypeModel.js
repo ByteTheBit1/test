@@ -21,6 +21,9 @@ const AggregatedGenerationPerTypeSchema = mongoose.Schema({
     MapCodeId : string,
     ProductionTypeId :string,
     RowHash: string,
+},
+{ 
+    collection : 'AggregatedGenerationPerType' 
 });
 
     module.exports = mongoose.model("AggregatedGenerationPerType",AggregatedGenerationPerTypeSchema);

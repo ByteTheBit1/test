@@ -1,8 +1,8 @@
 
     const mongoose=require('mongoose');
-    const ResolutionCodeSchema = mongoose.Schema({
+    const ResolutionCodeSchema = new mongoose.Schema({
 
-        _id: String,
+        _id: mongoose.Schema.Types.ObjectId,
         Id : String,
         EntityCreatedAt : String,
         EntityModifiedAt : String,
