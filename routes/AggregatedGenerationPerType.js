@@ -6,13 +6,14 @@ const MongoClient = require('mongodb').MongoClient
 
 
 //Erotima 2a
-router.get('/:_AreaName/:_ProductionType/:_Resolution/:_Year/:_Month/:_Day',(req,res,next)=>{
+router.get('/:_AreaName/:_ProductionType/:_Resolution/date/:_date_str', (req, res) => {
+    let _date_str = req.params._date_str.split("-")
+    let _Year =  parseInt(_date_str[0])
+    let _Month = parseInt(_date_str[1])
+    let _Day =   parseInt(_date_str[2])
     let _AreaName = req.params._AreaName
     let _Resolution=req.params._Resolution
     let _ProductionType=req.params._ProductionType
-    let _Year = parseInt(req.params._Year)   
-    let _Month = parseInt(req.params._Month) 
-    let _Day = parseInt(req.params._Day)    
 
     MongoClient.connect(URL,{
         useNewUrlParser: true,
@@ -112,13 +113,15 @@ router.get('/:_AreaName/:_ProductionType/:_Resolution/:_Year/:_Month/:_Day',(req
 
 
 //Erotima 2b
-router.get('/:_AreaName/:_ProductionType/:_Resolution/:_Year/:_Month',(req,res,next)=>{
-
+router.get('/:_AreaName/:_ProductionType/:_Resolution/month/:_date_str', (req, res) => {
+    let _date_str = req.params._date_str.split("-")
+    let _Year =  parseInt(_date_str[0])
+    let _Month = parseInt(_date_str[1])
+    let _Day =   parseInt(_date_str[2])
     let _AreaName = req.params._AreaName
     let _Resolution=req.params._Resolution
     let _ProductionType=req.params._ProductionType
-    let _Year = parseInt(req.params._Year)  
-    let _Month = parseInt(req.params._Month)   
+
  
 
 
@@ -253,7 +256,7 @@ router.get('/:_AreaName/:_ProductionType/:_Resolution/:_Year/:_Month',(req,res,n
 
 
 //Erotima 2c
-router.get('/:_AreaName/:_ProductionType/:_Resolution/:_Year',(req,res,next)=>{
+router.get('/:_AreaName/:_ProductionType/:_Resolution/year/:_Year',(req,res,next)=>{
 
     let _AreaName = req.params._AreaName
     let _Resolution=req.params._Resolution

@@ -19,16 +19,19 @@ const MongoClient = require('mongodb').MongoClient
 */
 
 // Erotima 1a    
-router.get('/:AreaName/:Resolution/:Year/:Month/:Day', (req, res) => {
+router.get('/:AreaName/:Resolution/date/:_date_str', (req, res) => {
+  let _date_str = req.params._date_str.split("-")
+  let _Year =  parseInt(_date_str[0])
+  let _Month = parseInt(_date_str[1])
+  let _Day =   parseInt(_date_str[2])
+  let _AreaName = req.params.AreaName
+  let _Resolution=req.params.Resolution
+    /*let dateObj = new Date();
+    let _Year = parseInt(req.params.Year)   || dateObj.getUTCFullYear();
+    let _Month = parseInt(req.params.Month) || dateObj.getUTCMonth() + 1; //months from 1-12
+    let _Day = parseInt(req.params.Day)     || dateObj.getUTCDate();
 
-    let _AreaName = req.params.AreaName
-    let _Resolution=req.params.Resolution
-    //let dateObj = new Date();
-    let _Year = parseInt(req.params.Year)   //|| dateObj.getUTCFullYear();
-    let _Month = parseInt(req.params.Month) //|| dateObj.getUTCMonth() + 1; //months from 1-12
-    let _Day = parseInt(req.params.Day)     //|| dateObj.getUTCDate();
-
-     console.log(_Year,_Month,_Day) // -> Checks for DATE Value
+     console.log(_Year,_Month,_Day) // -> Checks for DATE Value  */
 
  
 
@@ -133,11 +136,13 @@ router.get('/:AreaName/:Resolution/:Year/:Month/:Day', (req, res) => {
 
 
 //erotima 1b 
-router.get('/:AreaName/:Resolution/:Year/:Month', (req, res) => {
+router.get('/:AreaName/:Resolution/month/:_date_str', (req, res) => {
+  let _date_str = req.params._date_str.split("-")
+  let _Year =  parseInt(_date_str[0])
+  let _Month = parseInt(_date_str[1])
   const _AreaName=req.params.AreaName
   const _Resolution=req.params.Resolution
-  const _Year = parseInt(req.params.Year)
-  const _Month = parseInt(req.params.Month)
+
 
   MongoClient.connect(URL,{
     useNewUrlParser: true,
@@ -226,7 +231,7 @@ router.get('/:AreaName/:Resolution/:Year/:Month', (req, res) => {
 
 
 //erotima 1c
-router.get('/:AreaName/:Resolution/:Year/', (req, res) => {
+router.get('/:AreaName/:Resolution/year/:Year/', (req, res) => {
   const _AreaName=req.params.AreaName
   const _Resolution=req.params.Resolution
   const _Year = parseInt(req.params.Year)
