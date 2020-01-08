@@ -36,10 +36,12 @@ app.use('/test',test);
 
 const ActualTotalLoadRouter = require('./routes/ActualTotalLoad');
 const AggregatedGenerationPerTypeRouter = require('./routes/AggregatedGenerationPerType');
-const DayAheadTotalLoadForecastRouter = require('./routes/DayAheadTotalLoadForecast')
+const DayAheadTotalLoadForecastRouter = require('./routes/DayAheadTotalLoadForecast');
+const ActualvsForecastRouter = require('./routes/ActualvsForecast');
 app.use('/energy/api/ActualTotalLoad',ActualTotalLoadRouter);
 app.use('/energy/api/DayAheadTotalLoadForecast',DayAheadTotalLoadForecastRouter);
 app.use('/energy/api/AggregatedGenerationPerType',AggregatedGenerationPerTypeRouter);
+app.use('/energy/api/ActualvsForecast',ActualvsForecastRouter);
 
 // if u reach this line,no router was able to handle the request,so we return an error message.Morgan was used
 app.use((req,res,next)=>{

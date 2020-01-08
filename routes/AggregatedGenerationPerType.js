@@ -111,34 +111,6 @@ router.get('/:_AreaName/:_ProductionType/:_Resolution/:_Year/:_Month/:_Day',(req
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //Erotima 2b
 router.get('/:_AreaName/:_ProductionType/:_Resolution/:_Year/:_Month',(req,res,next)=>{
 
@@ -269,37 +241,6 @@ router.get('/:_AreaName/:_ProductionType/:_Resolution/:_Year/:_Month',(req,res,n
 
   })// connection ends here
 })
-
-module.exports = router;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
