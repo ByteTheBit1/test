@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const ResolutionCodeModel = require('../models/ResolutionCodeModel');
 const MongoClient = require("mongodb").MongoClient;
 
 
