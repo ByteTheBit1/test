@@ -60,7 +60,7 @@ app.use('/energy/api/ActualvsForecast',ActualvsForecastRouter);
 
 // if u reach this line,no router was able to handle the request,so we return an error message.Morgan was used
 app.use((req,res,next)=>{
-    const error = new Error('Bad request')
+    const error = new Error('400 : Bad request')
     error.status==400;
     next(error);
 });
