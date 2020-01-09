@@ -60,7 +60,7 @@ app.use('/energy/api/ActualvsForecast',ActualvsForecastRouter);
 
 // if u reach this line,no router was able to handle the request,so we return an error message.Morgan was used
 app.use((req,res,next)=>{
-    const error = new Error('Not found')
+    const error = new Error('Bad request')
     error.status==400;
     next(error);
 });
@@ -68,6 +68,7 @@ app.use((req,res,next)=>{
 // Function to handle all errors from all files(from db or 404).Morgan was used
 app.use((error,req,res,next)=>{
     res.status(error.status||400);
+    //if(error.status==403) new Error('Error 403 : No data')
     res.json({
         error:{
             message:error.message
