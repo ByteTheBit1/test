@@ -1,8 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const assert = require('assert')
-const URL = 'mongodb+srv://user:user@cluster0-0pwss.mongodb.net/test?retryWrites=true&w=majority'
-const MongoClient = require('mongodb').MongoClient
 
 
 //Erotima 2a
@@ -15,14 +12,6 @@ router.get('/:_AreaName/:_ProductionType/:_Resolution/date/:_date_str', (req, re
     let _Resolution=req.params._Resolution
     let _ProductionType=req.params._ProductionType
 
-    MongoClient.connect(URL,{
-        useNewUrlParser: true,
-        useUnifiedTopology: true}, 
-        async (err, client) => {
-          if (err) throw err; 
-          else console.log('connected to db');
-          assert.equal(null, err) 
-          const db = client.db('energy')
           var collection = db.collection('AggregatedGenerationPerType')
 
           const agg = [{
@@ -87,14 +76,13 @@ router.get('/:_AreaName/:_ProductionType/:_Resolution/date/:_date_str', (req, re
 
     var cursor = collection.aggregate(agg)
 
-      await cursor.toArray((error, result) => {
+       cursor.toArray((error, result) => {
         if(error) {
             return res.status(500).send(error);
         }
         res.send(result);
     });
 
-  })// connection ends here
 })
 
 
@@ -124,15 +112,6 @@ router.get('/:_AreaName/:_ProductionType/:_Resolution/month/:_date_str', (req, r
 
  
 
-
-    MongoClient.connect(URL,{
-        useNewUrlParser: true,
-        useUnifiedTopology: true}, 
-        async (err, client) => {
-          if (err) throw err; 
-          else console.log('connected to db');
-          assert.equal(null, err) 
-          const db = client.db('energy')
           var collection = db.collection('AggregatedGenerationPerType')
 
           const agg = [{
@@ -235,14 +214,13 @@ router.get('/:_AreaName/:_ProductionType/:_Resolution/month/:_date_str', (req, r
 
     var cursor = collection.aggregate(agg)
 
-      await cursor.toArray((error, result) => {
+       cursor.toArray((error, result) => {
         if(error) {
             return res.status(500).send(error);
         }
         res.send(result);
     });
 
-  })// connection ends here
 })
 
 
@@ -263,15 +241,6 @@ router.get('/:_AreaName/:_ProductionType/:_Resolution/year/:_Year',(req,res,next
     let _ProductionType=req.params._ProductionType
     let _Year = parseInt(req.params._Year)   
 
-
-    MongoClient.connect(URL,{
-        useNewUrlParser: true,
-        useUnifiedTopology: true}, 
-        async (err, client) => {
-          if (err) throw err; 
-          else console.log('connected to db');
-          assert.equal(null, err) 
-          const db = client.db('energy')
           var collection = db.collection('AggregatedGenerationPerType')
 
           const agg = [{
@@ -371,14 +340,13 @@ router.get('/:_AreaName/:_ProductionType/:_Resolution/year/:_Year',(req,res,next
 
     var cursor = collection.aggregate(agg)
 
-      await cursor.toArray((error, result) => {
+       cursor.toArray((error, result) => {
         if(error) {
             return res.status(500).send(error);
         }
         res.send(result);
     });
 
-  })// connection ends here
 })
 
 module.exports = router;

@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const assert = require('assert')
-const URL = 'mongodb+srv://user:user@cluster0-0pwss.mongodb.net/test?retryWrites=true&w=majority'
-const MongoClient = require('mongodb').MongoClient
+
 
 
 //Erotima 3a
@@ -18,14 +16,7 @@ router.get('/:_AreaName/:_Resolution/date/:_date_str',(req,res,next)=>{
     
     console.log(_Year,_Month,_Day)
 
-   MongoClient.connect(URL,{
-        useNewUrlParser: true,
-        useUnifiedTopology: true}, 
-        async (err, client) => {
-          if (err) throw err; 
-          else console.log('connected to db');
-          assert.equal(null, err) 
-          const db = client.db('energy')
+   
           let collection = db.collection('DayAheadTotalLoadForecast')
           const agg = [
             { 
@@ -103,14 +94,14 @@ router.get('/:_AreaName/:_Resolution/date/:_date_str',(req,res,next)=>{
           ];
           let cursor = collection.aggregate(agg)
     
-          await cursor.toArray((error, result) => {
+           cursor.toArray((error, result) => {
             if(error) {
                 return res.status(500).send(error);
             }
             res.send(result);
         });
     
-      })// connection ends here
+      
       
     })
 
@@ -131,14 +122,7 @@ router.get('/:AreaName/:Resolution/month/:_date_str', (req, res) => {
     let _Year =  parseInt(_date_str[0])
     let _Month = parseInt(_date_str[1])
   
-    MongoClient.connect(URL,{
-      useNewUrlParser: true,
-      useUnifiedTopology: true}, 
-      async (err, client) => {
-        if (err) throw err; 
-        else console.log('connected to db');
-        assert.equal(null, err) 
-        const db = client.db('energy')
+    
         let collection = db.collection('DayAheadTotalLoadForecast')
         const agg =
       [
@@ -205,14 +189,14 @@ router.get('/:AreaName/:Resolution/month/:_date_str', (req, res) => {
   
         let cursor = collection.aggregate(agg)
   
-        await cursor.toArray((error, result) => {
+         cursor.toArray((error, result) => {
           if(error) {
               return res.status(500).send(error);
           }
           res.send(result);
       });
   
-    })// connection ends here
+    
   })
 
 
@@ -230,14 +214,7 @@ router.get('/:AreaName/:Resolution/year/:Year/', (req, res) => {
     const _Resolution=req.params.Resolution
     const _Year = parseInt(req.params.Year)
   
-    MongoClient.connect(URL,{
-      useNewUrlParser: true,
-      useUnifiedTopology: true}, 
-      async (err, client) => {
-        if (err) throw err; 
-        else console.log('connected to db');
-        assert.equal(null, err) 
-        const db = client.db('energy')
+    
         let collection = db.collection('DayAheadTotalLoadForecast')
         const agg = [{$match: {
           AreaName: _AreaName,
@@ -298,14 +275,14 @@ router.get('/:AreaName/:Resolution/year/:Year/', (req, res) => {
         }}];
         let cursor = collection.aggregate(agg)
   
-        await cursor.toArray((error, result) => {
+         cursor.toArray((error, result) => {
           if(error) {
               return res.status(500).send(error);
           }
           res.send(result);
       });
   
-    })// connection ends here
+    
   })
 
 

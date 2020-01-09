@@ -1,12 +1,27 @@
 const express=require('express');
 const app = express();
 const bodyParser = require('body-parser'); // Body parser supports url,json formats,makes data easier to handle
-const mongoose = require('mongoose');   
+const URL = 'mongodb+srv://user:user@cluster0-0pwss.mongodb.net/test?retryWrites=true&w=majority'
+const MongoClient = require('mongodb').MongoClient
+const assert = require('assert')
+
 
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb+srv://user:user@cluster0-0pwss.mongodb.net/energy?retryWrites=true&w=majority');
+
+/// MEGALI PROSOXI STO GLOBAL VARIABLE EDO PERA
+db = null // global variable to hold the connection 
+
+MongoClient.connect(URL, {useNewUrlParser: true,useUnifiedTopology: true }, 
+                    function(err, client) {
+                        if (err) throw err; 
+                        else console.log('connected to db');
+                        assert.equal(null, err) 
+                        db = client.db('energy') // once connected, assign the connection to the global variable
+            })
+
+//mongoose.connect('mongodb+srv://user:user@cluster0-0pwss.mongodb.net/energy?retryWrites=true&w=majority');
 /*mongoose.connect('mongodb://localhost/Energy', {
     useNewUrlParser: true,
     useUnifiedTopology: true
