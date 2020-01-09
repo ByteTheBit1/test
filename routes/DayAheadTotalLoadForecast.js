@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/DayAheadTotalLoadForecast.js')
+const controller = require('../controllers/DayAheadTotalLoadForecastController.js')
 
 //Erotima 3a
 router.get('/:_AreaName/:_Resolution/date/:_date_str', controller.GetDay)
