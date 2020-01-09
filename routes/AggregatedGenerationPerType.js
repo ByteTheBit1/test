@@ -80,6 +80,11 @@ router.get('/:_AreaName/:_ProductionType/:_Resolution/date/:_date_str', (req, re
         if(error) {
             return res.status(500).send(error);
         }
+        if(result.length==0) {
+            return res.status(403).json({
+                error:'Error 403 : No data'
+                });
+            } 
         res.send(result);
     });
 
@@ -344,6 +349,11 @@ router.get('/:_AreaName/:_ProductionType/:_Resolution/year/:_Year',(req,res,next
         if(error) {
             return res.status(500).send(error);
         }
+        if(result.length==0) {
+            return res.status(403).json({
+                error:'Error 403 : No data'
+                });
+            } 
         res.send(result);
     });
 

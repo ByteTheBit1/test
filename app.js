@@ -16,7 +16,7 @@ db = null // global variable to hold the connection
 MongoClient.connect(URL, {useNewUrlParser: true,useUnifiedTopology: true }, 
                     function(err, client) {
                         if (err) throw err; 
-                        else console.log('connected to db');
+                        else console.log('connected to energy db');
                         assert.equal(null, err) 
                         db = client.db('energy') // once connected, assign the connection to the global variable
             })
@@ -61,16 +61,16 @@ app.use('/energy/api/ActualvsForecast',ActualvsForecastRouter);
 // if u reach this line,no router was able to handle the request,so we return an error message.Morgan was used
 app.use((req,res,next)=>{
     const error = new Error('Not found')
-    error.status(404);
+    error.status==400;
     next(error);
 });
 
 // Function to handle all errors from all files(from db or 404).Morgan was used
 app.use((error,req,res,next)=>{
-    res.status(error.status||500);
+    res.status(error.status||400);
     res.json({
         error:{
-            message:"U fucked up"
+            message:error.message
         }
     });
 });

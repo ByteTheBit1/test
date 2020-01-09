@@ -130,6 +130,11 @@ router.get('/:_AreaName/:_Resolution/date/:_date_str',(req,res,next)=>{
             if(error) {
                 return res.status(500).send(error);
             }
+            if(result.length==0) {
+              return res.status(403).json({
+                  error:'Error 403 : No data'
+                  });
+              } 
             res.send(result);
         });
     
@@ -265,6 +270,11 @@ router.get('/:AreaName/:Resolution/month/:_date_str', (req, res) => {
           if(error) {
               return res.status(500).send(error);
           }
+          if(result.length==0) {
+            return res.status(403).json({
+                error:'Error 403 : No data'
+                });
+            } 
           res.send(result);
       });
   
@@ -388,6 +398,11 @@ router.get('/:AreaName/:Resolution/month/:_date_str', (req, res) => {
               if(error) {
                   return res.status(500).send(error);
               }
+              if(result.length==0) {
+                return res.status(403).json({
+                    error:'Error 403 : No data'
+                    });
+                } 
               res.send(result);
           });
       
