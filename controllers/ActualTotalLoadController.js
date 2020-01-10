@@ -6,6 +6,10 @@ exports.GetDate=(req, res) => {
     let _Year =  parseInt(_date_str[0])
     let _Month = parseInt(_date_str[1])
     let _Day =   parseInt(_date_str[2])
+    if( (!_Month) || ( !_Day)){
+      return res.status(400).json({"Error 400":"Bad request" })
+    }
+
     let _AreaName = req.params.AreaName
     let _Resolution=req.params.Resolution
     // Ta sxolia sto dateObj einai peiramatismos gia to current date
@@ -119,6 +123,9 @@ exports.GetDate=(req, res) => {
     let _date_str = req.params._date_str.split("-")
     let _Year =  parseInt(_date_str[0])
     let _Month = parseInt(_date_str[1])
+    if(  ( !_Month)){
+      return res.status(400).json({"Error 400":"Bad request" })
+    }
     const _AreaName=req.params.AreaName
     const _Resolution=req.params.Resolution
   
