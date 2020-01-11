@@ -1,4 +1,7 @@
 exports.GetDay = (req, res, next) => {
+  // simple counter to count all requests for specific user
+  if(!req.session.counter){req.session.counter=1}
+  else{req.session.counter++}
 
     let _date_str = req.params._date_str.split("-")
     let _Year = parseInt(_date_str[0])
@@ -111,6 +114,10 @@ exports.GetDay = (req, res, next) => {
 
 
 exports.GetMonth = (req, res) => {
+  // simple counter to count all requests for specific user
+  if(!req.session.counter){req.session.counter=1}
+  else{req.session.counter++}
+
     const _AreaName = req.params.AreaName
     const _Resolution = req.params.Resolution
     let _date_str = req.params._date_str.split("-")
@@ -227,6 +234,10 @@ exports.GetMonth = (req, res) => {
 
 
 exports.GetYear = (req, res) => {
+  // simple counter to count all requests for specific user
+  if(!req.session.counter){req.session.counter=1}
+  else{req.session.counter++}
+  
     const _AreaName = req.params.AreaName
     const _Resolution = req.params.Resolution
     const _Year = parseInt(req.params.Year)

@@ -4,20 +4,22 @@ const bodyParser        =   require('body-parser'); // Body parser supports url,
 const MongoClient       =   require('mongodb').MongoClient
 const assert            =   require('assert')
 const credentials       =   require('./config/credentials')
+const cookieParser      =   require('cookie-parser')
 const mongoose          =   require('mongoose')
 const cors              =   require('cors')
+const session           =   require('express-session')
+const MongoStore        =   require('connect-mongo')(session);
 
-//const session           =   require('express-session')
-mongoose.connect('mongodb+srv://'+credentials.database.username+':'+credentials.database.password+'@cluster0-0pwss.mongodb.net/energy?retryWrites=true&w=majority')
+
 app.use(cors())
-
 
 
 const URL  =    'mongodb+srv://'
                 +credentials.database.username+':'
                 +credentials.database.password+
-                '@cluster0-0pwss.mongodb.net/test?retryWrites=true&w=majority'
+                '@cluster0-0pwss.mongodb.net/energy?retryWrites=true&w=majority'
 
+ mongoose.connect(URL)
 
 
 //Add bodyParser middleware to parse POST request body
@@ -37,11 +39,21 @@ MongoClient.connect(URL,
                         db = client.db('energy') // once connected, assign the connection to the global variable
             })
 
+app.use(cookieParser());
+// see -> ./config/credentials for details
+app.use(session({
+    secret: credentials.session.secret,
+    resave: false,
+    saveUninitialized: false,
+    store: new MongoStore({ mongooseConnection:mongoose.connection }),
+    cookie: {
+        secure: false,
+        maxAge: credentials.session.expires_in,   // set to 1 hour
+        httpOnly: false
+    }
+}));
 
-/*morgan is a package for errors
-const morgan = require('morgan');
-app.use(morgan('dev'));
-*/
+
 
 //Declare Routers 
 const ActualTotalLoadRouter             = require('./routes/ActualTotalLoad');
@@ -64,16 +76,6 @@ app.use((req,res,)=>{
     })
 });
 
-/* Function to handle all errors from all files(from db or 404).Morgan was used
-app.use((error,req,res,next)=>{
-    res.status(error.status||400);
-    //if(error.status==403) new Error('Error 403 : No data')
-    res.json({
-        error:{
-            message:error.message
-        }
-    });
-});
-*/
+
 
 module.exports = app;

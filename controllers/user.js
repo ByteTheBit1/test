@@ -1,8 +1,9 @@
-const mongoose  = require("mongoose");
-const bcrypt    = require("bcrypt");
-const jwt       = require("jsonwebtoken");
-const User      = require("../models/user");
-const credentials       =   require('../config/credentials')
+const mongoose      = require("mongoose");
+const bcrypt        = require("bcrypt");
+const jwt           = require('jsonwebtoken');
+//const jwtBlacklist  = require('jwt-blacklist')(jwt);  cannot be installed for unkown reason :(
+const User          = require("../models/user");
+const credentials   = require('../config/credentials')
 
 
 exports.user_signup = (req, res, next) => {
@@ -61,6 +62,13 @@ exports.user_login = (req, res, next) => {
           });
         }
         if (result) {
+          let expiration
+          // admin check
+          if(req.body.email==credentials.admin_user.email){ 
+              expiration="12h",
+              req.session.admin=true 
+            }
+          else{ expiration = "1h"}
           const token = jwt.sign(
             {
               email:  user[0].email,
@@ -68,9 +76,10 @@ exports.user_login = (req, res, next) => {
             },
             credentials.secret,
             {
-              expiresIn: "1h"
+              expiresIn: expiration
             }
           );
+
           return res.status(200).json({
             message: "Auth successful",
             token: token
@@ -104,3 +113,14 @@ exports.user_delete = (req, res, next) => {
       });
     });
 };
+
+
+/*
+
+jwt-blacklist cannot be installed for unkown reason :(
+
+exports.logout = (req,res,next) => {
+      const token =  req.headers['x-observatory-auth'];
+      jwtBlacklist.blacklist(token);
+}
+*/

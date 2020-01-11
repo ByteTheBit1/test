@@ -7,9 +7,11 @@ module.exports = {
         password: "user"
     },
     admin_user: {
-        username: "admin",
         password: "admin",
-        email: "admin@admin.com",
-        category: "admin"
+        email: "admin@admin.com"
+    },
+    session:{
+        secret: "Another One Bytes the Bit",
+        expires_in: 60 * 60 * 1000  // counts milliseconds =>  set to 1 hour
     }
 }
