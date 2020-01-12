@@ -1,3 +1,6 @@
+Querries = require('../Querries/DayAheadTotalLoadForecastControllerQuerries')
+
+
 exports.GetDay = (req, res, next) => {
   // simple counter to count all requests for specific user
   if(!req.session.counter){req.session.counter=1}
@@ -18,80 +21,7 @@ exports.GetDay = (req, res, next) => {
   
   
     let collection = db.collection('DayAheadTotalLoadForecast')
-    const agg = [
-      {
-        $match:
-        {
-          AreaName: _AreaName,
-          Day: _Day,
-          Month: _Month,
-          Year: _Year
-        }
-      },
-  
-      {
-        $lookup:
-        {
-          from: 'ResolutionCode',
-          localField: 'ResolutionCodeId',
-          foreignField: 'Id',
-          as: "resolution_codes"
-        }
-      },
-      {
-        $unwind: { path: "$resolution_codes" }
-      },
-  
-      {
-        $match: { 'resolution_codes.ResolutionCodeText': _Resolution }
-      },
-      {
-        $lookup: {
-          from: 'MapCode',
-          localField: 'MapCodeId',
-          foreignField: 'Id',
-          as: 'Map_Code'
-        }
-      }, {
-        $unwind: {
-          path: '$Map_Code'
-        }
-      }, {
-        $lookup: {
-          from: 'AreaTypeCode',
-          localField: 'AreaTypeCodeId',
-          foreignField: 'Id',
-          as: 'Area_Type_Code'
-        }
-      }, {
-        $unwind: {
-          path: '$Area_Type_Code'
-        }
-      },
-      {
-        $project:
-        {
-          _id: 0,
-          Source: 'entso-e',
-          Dataset: 'DayAheadTotalLoadForecast',
-          AreaName: '$AreaName',
-          AreaTypeCode: '$Area_Type_Code.AreaTypeCodeText',
-          MapCode: '$Map_Code.MapCodeText',
-          ResolutionCode: '$resolution_codes.ResolutionCodeText',
-          Year: { $toString: "$Year" },
-          Month: { $toString: "$Month" },
-          Day: { $toString: "$Day" },
-          DateTimeUTC: '$DateTime',
-          DayAheadTotalLoadForecast: { $toString: "$TotalLoadValue" },
-          UpdateTimeUTC: '$UpdateTime'
-        }
-      },
-      {
-        $sort: {
-          'DateTime': 1
-        }
-      }
-    ];
+    const agg = Querries.Get_Date_Querry (_AreaName,_Resolution,_Year,_Month,_Day)
     let cursor = collection.aggregate(agg)
   
     cursor.toArray((error, result) => {
@@ -129,90 +59,8 @@ exports.GetMonth = (req, res) => {
   
   
     let collection = db.collection('DayAheadTotalLoadForecast')
-    const agg =
-      [
-        {
-          $match: {
-            AreaName: _AreaName,
-            Month: _Month,
-            Year: _Year
-          }
-        }, {
-          $group: {
-            _id: {
-              Day: "$Day",
-              Year: "$Year",
-              Month: "$Month",
-              AreaName: "$AreaName",
-              AreaTypeCodeId: "$AreaTypeCodeId",
-              AreaCodeId: "$AreaCodeId",
-              ResolutionCodeId: "$ResolutionCodeId",
-              MapCodeId: "$MapCodeId"
-            },
-            DayAheadTotalLoadForecast: {
-              $sum: "$TotalLoadValue"
-            },
-          }
-        }, {
-          $lookup: {
-            'from': 'ResolutionCode',
-            'localField': '_id.ResolutionCodeId',
-            'foreignField': 'Id',
-            'as': 'resolution_codes'
-          }
-        }, {
-          $unwind: {
-            path: '$resolution_codes'
-          }
-        }, {
-          $match: {
-            'resolution_codes.ResolutionCodeText': _Resolution
-          }
-        }, {
-          $lookup: {
-            from: 'MapCode',
-            localField: '_id.MapCodeId',
-            foreignField: 'Id',
-            as: 'Map_Code'
-          }
-        }, {
-          $unwind: {
-            path: '$Map_Code'
-          }
-        }, {
-          $lookup: {
-            from: 'AreaTypeCode',
-            localField: '_id.AreaTypeCodeId',
-            foreignField: 'Id',
-            as: 'Area_Type_Code'
-          }
-        }, {
-          $unwind: {
-  
-  
-            path: '$Area_Type_Code'
-  
-  
-          }
-        }, {
-          $project: {
-            _id: 0,
-            Source: 'entso-e',
-            Dataset: 'DayAheadTotalLoadForecast',
-            AreaName: '$_id.AreaName',
-            AreaTypeCode: '$Area_Type_Code.AreaTypeCodeText',
-            MapCode: '$Map_Code.MapCodeText',
-            ResolutionCode: '$resolution_codes.ResolutionCodeText',
-            Year: { $toString: '$_id.Year' },
-            Month: { $toString: '$_id.Month' },
-            Day: { $toString: '$_id.Day' },
-            DayAheadTotalLoadForecastByDayValue: { $toString: '$DayAheadTotalLoadForecast' }
-          }
-        }, {
-          $sort: {
-            Day: 1
-          }
-        }];
+    const agg = Querries.Get_Month_Querry (_AreaName,_Resolution,_Year,_Month)
+      
   
     let cursor = collection.aggregate(agg)
   
@@ -244,85 +92,7 @@ exports.GetYear = (req, res) => {
   
   
     let collection = db.collection('DayAheadTotalLoadForecast')
-    const agg = [{
-      $match: {
-        AreaName: _AreaName,
-        Year: _Year
-      }
-    }, {
-      $group: {
-        _id: {
-          Year: "$Year",
-          Month: "$Month",
-          AreaName: "$AreaName",
-          AreaTypeCodeId: "$AreaTypeCodeId",
-          AreaCodeId: "$AreaCodeId",
-          ResolutionCodeId: "$ResolutionCodeId",
-          MapCodeId: "$MapCodeId"
-        },
-        DayAheadTotalLoadForecastByMonthValue: {
-          $sum: "$TotalLoadValue"
-        },
-      }
-    }, {
-      $lookup: {
-        'from': 'ResolutionCode',
-        'localField': '_id.ResolutionCodeId',
-        'foreignField': 'Id',
-        'as': 'resolution_codes'
-      }
-    }, {
-      $unwind: {
-        path: '$resolution_codes'
-      }
-    }, {
-      $match: {
-        'resolution_codes.ResolutionCodeText': _Resolution
-      }
-    }, {
-      $lookup: {
-        from: 'MapCode',
-        localField: '_id.MapCodeId',
-        foreignField: 'Id',
-        as: 'Map_Code'
-      }
-    }, {
-      $unwind: {
-        path: '$Map_Code'
-      }
-    }, {
-      $lookup: {
-        from: 'AreaTypeCode',
-        localField: '_id.AreaTypeCodeId',
-        foreignField: 'Id',
-        as: 'Area_Type_Code'
-      }
-    }, {
-      $unwind: {
-  
-  
-        path: '$Area_Type_Code'
-  
-  
-      }
-    }, {
-      $project: {
-        _id: 0,
-        Source: 'entso-e',
-        Dataset: 'DayAheadTotalLoadForecast',
-        AreaName: '$_id.AreaName',
-        AreaTypeCode: '$Area_Type_Code.AreaTypeCodeText',
-        MapCode: '$Map_Code.MapCodeText',
-        ResolutionCode: '$resolution_codes.ResolutionCodeText',
-        Year: { $toString: '$_id.Year' },
-        Month: { $toString: '$_id.Month' },
-        DayAheadTotalLoadForecastByMonthValue: { $toString: '$DayAheadTotalLoadForecastByMonthValue' }
-      }
-    }, {
-      $sort: {
-        Month: 1
-      }
-    }];
+    const agg = Querries.Get_Year_Querry(_AreaName,_Resolution,_Year)
     let cursor = collection.aggregate(agg)
   
     cursor.toArray((error, result) => {
