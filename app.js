@@ -42,15 +42,9 @@ MongoClient.connect(URL,
 app.use(cookieParser());
 // see -> ./config/credentials for details
 app.use(session({
-    secret: credentials.session.secret,
-    resave: false,
-    saveUninitialized: false,
-    store: new MongoStore({ mongooseConnection:mongoose.connection }),
-    cookie: {
-        secure: false,
-        maxAge: credentials.session.expires_in,   // set to 1 hour
-        httpOnly: false
-    }
+    ...credentials.session_options,
+    store: new MongoStore({ mongooseConnection:mongoose.connection })
+    
 }));
 
 

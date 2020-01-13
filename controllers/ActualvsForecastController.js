@@ -3,7 +3,7 @@ const Querries = require('../Querries/ActualvsForecastQuerries')
 exports.GetDate =(req,res,next)=>{
 // simple counter to count all requests for specific user
 if(!req.session.counter){req.session.counter=1}
-else{req.session.counter++}
+else{req.session.counter++;       console.log('request number:',req.session.counter) }
 
     let _date_str = req.params._date_str.split("-")
     let _Year =  parseInt(_date_str[0])
@@ -40,7 +40,7 @@ else{req.session.counter++}
     exports.GetMonth = (req, res) => {
         // simple counter to count all requests for specific user
         if(!req.session.counter){req.session.counter=1}
-        else{req.session.counter++}
+        else{req.session.counter++;       console.log('request number:',req.session.counter) }
 
         const _AreaName=req.params.AreaName
         const _Resolution=req.params.Resolution
@@ -75,7 +75,10 @@ else{req.session.counter++}
     exports.GetYear = (req, res) => {
       // simple counter to count all requests for specific user
         if(!req.session.counter){req.session.counter=1}
-        else{req.session.counter++}
+        else{
+          req.session.counter++
+          console.log('request number:',req.session.counter)
+        }
 
         const _AreaName=req.params.AreaName
         const _Resolution=req.params.Resolution
