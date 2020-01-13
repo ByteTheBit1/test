@@ -21,13 +21,9 @@ exports.GetDay = (req, res) => {
     let _AreaName = req.params._AreaName
     let _Resolution=req.params._Resolution
     let _ProductionType=req.params._ProductionType
-
-          var collection = db.collection('AggregatedGenerationPerType')
-
-          let agg = Querries.Get_Date_Querry(_AreaName,_ProductionType,_Resolution,_Year,_Month,_Day)
-
-
-    var cursor = collection.aggregate(agg)
+    let collection = db.collection('AggregatedGenerationPerType')
+    let agg = Querries.Get_Date_Querry(_AreaName,_ProductionType,_Resolution,_Year,_Month,_Day)
+    let cursor = collection.aggregate(agg)
 
 /* send a csv response here */
         if(req.query.format=='csv'){
@@ -82,7 +78,6 @@ exports.GetMonth = (req, res) => {
     let collection = db.collection('AggregatedGenerationPerType')
     let agg = Querries.Get_Month_Querry (_AreaName,_ProductionType,_Resolution,_Year,_Month)
 
-
     let cursor = collection.aggregate(agg)
 
 /* send a csv response here */
@@ -130,13 +125,9 @@ exports.GetYear = (req,res,next)=>{
     let _Resolution=req.params._Resolution
     let _ProductionType=req.params._ProductionType
     let _Year = parseInt(req.params._Year)   
-
-          var collection = db.collection('AggregatedGenerationPerType')
-
-          let agg = Querries.Get_Year_Querry (_AreaName,_ProductionType,_Resolution,_Year)
-
-
-    var cursor = collection.aggregate(agg)
+    let collection = db.collection('AggregatedGenerationPerType')
+    let agg = Querries.Get_Year_Querry (_AreaName,_ProductionType,_Resolution,_Year)
+    let cursor = collection.aggregate(agg)
 
 
 /* send a csv response here */
