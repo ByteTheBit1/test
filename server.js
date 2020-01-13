@@ -10,8 +10,8 @@ var fs = require('fs');
 //               will block the entire process until it completes.
 //               In a busy server, however, using a synchronous function 
 //               during a request will force the server to deal with the requests one by one!!!!)
-var key = fs.readFileSync('./SSL KEYS/15886504_stas.com.key');
-var cert = fs.readFileSync( './SSL KEYS/15886504_stas.com.cert' );
+var key = fs.readFileSync('./SSL KEYS/key.pem');
+var cert = fs.readFileSync( './SSL KEYS/cert.pem' );
 var options = {key: key,   cert: cert  };
 
 

@@ -3,7 +3,7 @@ const {Parser}           =  require('json2csv')
 
 
 exports.GetDate=(req, res) => {
-  
+
   // simple counter to count all requests for specific user
   if(!req.session.counter){req.session.counter=1}
   else{
@@ -46,7 +46,7 @@ exports.GetDate=(req, res) => {
       });
     }   
 /* JSON response here*/
-    else{ // format will be json or undefined or random string
+    else{ // format will be equal to json or undefined or random string
       res.setHeader('Content-Type', 'application/json');
       cursor.toArray((error, result) => {
         if(result.length==0) {
