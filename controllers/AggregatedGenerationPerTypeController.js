@@ -1,4 +1,6 @@
-Querries = require('../Querries/AggregatedGenerationPerTypeQuerries')
+let Querries = require('../Querries/AggregatedGenerationPerTypeQuerries')
+const {Parser}           =  require('json2csv')
+
 
 
 exports.GetDay = (req, res) => {
@@ -22,23 +24,42 @@ exports.GetDay = (req, res) => {
 
           var collection = db.collection('AggregatedGenerationPerType')
 
-          const agg = Querries.Get_Date_Querry(_AreaName,_Resolution,_Year,_Month,_Day)
+          let agg = Querries.Get_Date_Querry(_AreaName,_ProductionType,_Resolution,_Year,_Month,_Day)
 
 
     var cursor = collection.aggregate(agg)
 
-       cursor.toArray((error, result) => {
-        if(error) {
-            return res.status(500).send(error);
-        }
-        if(result.length==0) {
-            return res.status(403).json({
-                error:'Error 403 : No data'
-                });
-            } 
-        res.send(result);
-    });
+/* send a csv response here */
+        if(req.query.format=='csv'){
+            res.setHeader('Content-Type', 'text/csv');
+            //res.setHeader('Content-Disposition', 'attachment; filename=\"' + 'download-' + Date.now() + '.csv\"');
+        
+            let fields = ['Source', 'Dataset','AreaName',"AreaTypeCode","MapCode","ResolutionCode","Year",
+                        "Month","Day","DateTimeUTC","ProductionType","ActualGenerationOutputValue","UpdateTimeUTC"];//all field names
+            
+            let json2csvParser = new Parser({ fields });
 
+            cursor.toArray((error, result) => {
+            if(result.length==0) {
+                return res.status(403).json({
+                    error:'Error 403 : No data'
+                    });
+                } 
+            res.send(json2csvParser.parse(result));
+        });
+        }   
+/* JSON response here*/
+        else{ // format will be json or undefined or random string
+            res.setHeader('Content-Type', 'application/json');
+            cursor.toArray((error, result) => {
+                if(result.length==0) {
+                return res.status(403).json({
+                    error:'Error 403 : No data'
+                    });
+                } 
+                res.send(result);
+        });
+        }
 }
 
 exports.GetMonth = (req, res) => {
@@ -58,23 +79,43 @@ exports.GetMonth = (req, res) => {
     let _AreaName = req.params._AreaName
     let _Resolution=req.params._Resolution
     let _ProductionType=req.params._ProductionType
-
- 
-
-          var collection = db.collection('AggregatedGenerationPerType')
-
-          const agg = Querries.Get_Month_Querry (_AreaName,_Resolution,_Year,_Month)
+    let collection = db.collection('AggregatedGenerationPerType')
+    let agg = Querries.Get_Month_Querry (_AreaName,_ProductionType,_Resolution,_Year,_Month)
 
 
-    var cursor = collection.aggregate(agg)
+    let cursor = collection.aggregate(agg)
 
-       cursor.toArray((error, result) => {
-        if(error) {
-            return res.status(500).send(error);
-        }
+/* send a csv response here */
+if(req.query.format=='csv'){
+    res.setHeader('Content-Type', 'text/csv');
+    //res.setHeader('Content-Disposition', 'attachment; filename=\"' + 'download-' + Date.now() + '.csv\"');
+
+    let fields = ['Source', 'Dataset','AreaName',"AreaTypeCode","MapCode","ResolutionCode","Year",
+                "Month","Day","ProductionType","ActualGenerationOutputByDayValue"];//all field names
+    
+    let json2csvParser = new Parser({ fields });
+
+    cursor.toArray((error, result) => {
+    if(result.length==0) {
+        return res.status(403).json({
+            error:'Error 403 : No data'
+            });
+        } 
+    res.send(json2csvParser.parse(result));
+    });
+}   
+/* JSON response here*/
+else{ // format will be json or undefined or random string
+    res.setHeader('Content-Type', 'application/json');
+    cursor.toArray((error, result) => {
+        if(result.length==0) {
+        return res.status(403).json({
+            error:'Error 403 : No data'
+            });
+        } 
         res.send(result);
     });
-
+}
 }
 
 exports.GetYear = (req,res,next)=>{
@@ -92,21 +133,41 @@ exports.GetYear = (req,res,next)=>{
 
           var collection = db.collection('AggregatedGenerationPerType')
 
-          const agg = Querries.Get_Year_Querry (_AreaName,_Resolution,_Year)
+          let agg = Querries.Get_Year_Querry (_AreaName,_ProductionType,_Resolution,_Year)
 
 
     var cursor = collection.aggregate(agg)
 
-       cursor.toArray((error, result) => {
-        if(error) {
-            return res.status(500).send(error);
-        }
-        if(result.length==0) {
-            return res.status(403).json({
-                error:'Error 403 : No data'
-                });
-            } 
-        res.send(result);
-    });
 
+/* send a csv response here */
+        if(req.query.format=='csv'){
+            res.setHeader('Content-Type', 'text/csv');
+            //res.setHeader('Content-Disposition', 'attachment; filename=\"' + 'download-' + Date.now() + '.csv\"');
+
+            let fields = ['Source', 'Dataset','AreaName',"AreaTypeCode","MapCode","ResolutionCode","Year",
+                        "Month","Day","ProductionType","ActualGenerationOutputByMonthValue"];//all field names
+            
+            let json2csvParser = new Parser({ fields });
+
+            cursor.toArray((error, result) => {
+            if(result.length==0) {
+                return res.status(403).json({
+                    error:'Error 403 : No data'
+                    });
+                } 
+            res.send(json2csvParser.parse(result));
+            });
+        }   
+/* JSON response here*/
+        else{ // format will be json or undefined or random string
+            res.setHeader('Content-Type', 'application/json');
+            cursor.toArray((error, result) => {
+                if(result.length==0) {
+                return res.status(403).json({
+                    error:'Error 403 : No data'
+                    });
+                } 
+                res.send(result);
+            });
+        }
 }

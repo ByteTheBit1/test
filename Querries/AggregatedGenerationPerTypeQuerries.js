@@ -1,6 +1,6 @@
 module.exports ={ 
 
-    Get_Date_Querry     : function(_AreaName,_Resolution,_Year,_Month,_Day){
+    Get_Date_Querry     : function(_AreaName,_ProductionType,_Resolution,_Year,_Month,_Day){
         Q= [{
             $match: {
                 AreaName: _AreaName,
@@ -63,7 +63,7 @@ module.exports ={
       
       },
 
-    Get_Month_Querry    : function(_AreaName,_Resolution,_Year,_Month,_Day){
+    Get_Month_Querry    : function(_AreaName,_ProductionType,_Resolution,_Year,_Month,_Day){
         Q= [{
             $match: {
                 AreaName: _AreaName,
@@ -163,7 +163,7 @@ module.exports ={
           return Q
     },
        
-    Get_Year_Querry     : function(_AreaName,_Resolution,_Year){
+    Get_Year_Querry     : function(_AreaName,_ProductionType,_Resolution,_Year){
          Q= [{
             $match: {
                 AreaName: _AreaName,

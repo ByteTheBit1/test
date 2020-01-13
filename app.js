@@ -14,12 +14,17 @@ const MongoStore        =   require('connect-mongo')(session);
 app.use(cors())
 
 
-const URL  =    'mongodb+srv://'
+const URL  =   'mongodb+srv://'
                 +credentials.database.username+':'
                 +credentials.database.password+
-                '@cluster0-0pwss.mongodb.net/energy?retryWrites=true&w=majority'
+                '@cluster0-0pwss.mongodb.net/'
+                +credentials.database.db_name
+                +'?retryWrites=true&w=majority'
 
- mongoose.connect(URL)
+ mongoose.connect(URL,{
+     useCreateIndex: true,
+     useNewUrlParser: true,
+    useUnifiedTopology: true})
 
 
 //Add bodyParser middleware to parse POST request body
@@ -31,7 +36,7 @@ app.use(bodyParser.json());
 db = null // -> global variable to hold the connection 
 
 MongoClient.connect(URL, 
-    {useNewUrlParser: true,useUnifiedTopology: true }, 
+    {useNewUrlParser: true,useUnifiedTopology:true }, 
     function(err, client) {
                         if (err) throw err; 
                         else console.log('connected to energy db');
@@ -60,6 +65,7 @@ app.use('/energy/api/DayAheadTotalLoadForecast',DayAheadTotalLoadForecastRouter)
 app.use('/energy/api/AggregatedGenerationPerType',AggregatedGenerationPerTypeRouter);
 app.use('/energy/api/ActualvsForecast',ActualvsForecastRouter);
 app.use('/energy/api/user',UserRouter);
+
 
 
 // if u reach this line,no router was able to handle the request,so we return an error message.

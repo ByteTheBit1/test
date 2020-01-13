@@ -20,5 +20,11 @@ module.exports = {
             maxAge: this.One_hour,     // set to 1 hour   
             httpOnly: false
     }
-    }
+    },
+    URL: 'mongodb+srv://'
+        +this.username+':'
+        +this.password+
+        '@cluster0-0pwss.mongodb.net/'
+        +this.database
+        +'?retryWrites=true&w=majority'
 }

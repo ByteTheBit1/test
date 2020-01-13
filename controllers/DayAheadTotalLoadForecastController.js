@@ -1,4 +1,6 @@
-Querries = require('../Querries/DayAheadTotalLoadForecastControllerQuerries')
+const Querries = require('../Querries/DayAheadTotalLoadForecastControllerQuerries')
+const {Parser}           =  require('json2csv')
+
 
 
 exports.GetDay = (req, res, next) => {
@@ -27,21 +29,39 @@ exports.GetDay = (req, res, next) => {
     const agg = Querries.Get_Date_Querry (_AreaName,_Resolution,_Year,_Month,_Day)
     let cursor = collection.aggregate(agg)
   
-    cursor.toArray((error, result) => {
-      if (error) {
-        return res.status(500).send(error);
-      }
-      if (result.length == 0) {
-        return res.status(403).json({
-          error: 'Error 403 : No data'
-        });
-      }
-      res.send(result);
-    });
+    /* send a csv response here */
+          if(req.query.format=='csv'){
+            res.setHeader('Content-Type', 'text/csv');
+            //res.setHeader('Content-Disposition', 'attachment; filename=\"' + 'download-' + Date.now() + '.csv\"');
+
+            let fields = ['Source', 'Dataset','AreaName',"AreaTypeCode","MapCode","ResolutionCode","Year",
+                        "Month","Day","DateTimeUTC","ProductionType","DayAheadTotalLoadForecastValue","UpdateTimeUTC"];//all field names
+            
+            let json2csvParser = new Parser({ fields });
+
+            cursor.toArray((error, result) => {
+            if(result.length==0) {
+                return res.status(403).json({
+                    error:'Error 403 : No data'
+                    });
+                } 
+            res.send(json2csvParser.parse(result));
+          });
+          }   
+/* JSON response here*/
+          else{ // format will be json or undefined or random string
+            res.setHeader('Content-Type', 'application/json');
+            cursor.toArray((error, result) => {
+                if(result.length==0) {
+                return res.status(403).json({
+                    error:'Error 403 : No data'
+                    });
+                } 
+                res.send(result);
+          });
+          }
+}
   
-  
-  
-  }
 
 
 
@@ -70,20 +90,38 @@ exports.GetMonth = (req, res) => {
   
     let cursor = collection.aggregate(agg)
   
-    cursor.toArray((error, result) => {
-      if (error) {
-        return res.status(500).send(error);
-      }
-      if (result.length == 0) {
-        return res.status(403).json({
-          error: 'Error 403 : No data'
+        /* send a csv response here */
+        if(req.query.format=='csv'){
+          res.setHeader('Content-Type', 'text/csv');
+          //res.setHeader('Content-Disposition', 'attachment; filename=\"' + 'download-' + Date.now() + '.csv\"');
+        
+          let fields = ['Source', 'Dataset','AreaName',"AreaTypeCode","MapCode","ResolutionCode","Year",
+                      "Month","Day","DayAheadTotalLoadForecastByDayValue"];//all field names
+          
+        let json2csvParser = new Parser({ fields });
+
+          cursor.toArray((error, result) => {
+            if(result.length==0) {
+              return res.status(403).json({
+                  error:'Error 403 : No data'
+                  });
+              } 
+            res.send(json2csvParser.parse(result));
         });
-      }
-      res.send(result);
-    });
-  
-  
-  }
+        }   
+  /* JSON response here*/
+        else{ // format will be json or undefined or random string
+        res.setHeader('Content-Type', 'application/json');
+        cursor.toArray((error, result) => {
+          if(result.length==0) {
+            return res.status(403).json({
+                error:'Error 403 : No data'
+                });
+            } 
+          res.send(result);
+        });
+    }
+}
 
 
 
@@ -104,19 +142,37 @@ exports.GetYear = (req, res) => {
     const agg = Querries.Get_Year_Querry(_AreaName,_Resolution,_Year)
     let cursor = collection.aggregate(agg)
   
-    cursor.toArray((error, result) => {
-      if (error) {
-        return res.status(500).send(error);
-      }
-      if (result.length == 0) {
-        return res.status(403).json({
-          error: 'Error 403 : No data'
+        /* send a csv response here */
+        if(req.query.format=='csv'){
+          res.setHeader('Content-Type', 'text/csv');
+          //res.setHeader('Content-Disposition', 'attachment; filename=\"' + 'download-' + Date.now() + '.csv\"');
+        
+          let fields = ['Source', 'Dataset','AreaName',"AreaTypeCode","MapCode","ResolutionCode","Year",
+                      "Month","Day","DayAheadTotalLoadForecastByMonthValue"];//all field names
+          
+        let json2csvParser = new Parser({ fields });
+
+          cursor.toArray((error, result) => {
+            if(result.length==0) {
+              return res.status(403).json({
+                  error:'Error 403 : No data'
+                  });
+              } 
+            res.send(json2csvParser.parse(result));
+          });
+        }   
+/* JSON response here*/
+        else{ // format will be json or undefined or random string
+        res.setHeader('Content-Type', 'application/json');
+        cursor.toArray((error, result) => {
+          if(result.length==0) {
+            return res.status(403).json({
+                error:'Error 403 : No data'
+                });
+            } 
+          res.send(result);
         });
-      }
-      res.send(result);
-    });
-  
-  
-  }
+    }
+}
 
 

@@ -1,4 +1,6 @@
 const Querries = require('../Querries/ActualvsForecastQuerries')
+const {Parser}           =  require('json2csv')
+
 
 exports.GetDate =(req,res,next)=>{
 // simple counter to count all requests for specific user
@@ -22,20 +24,40 @@ else{req.session.counter++;       console.log('request number:',req.session.coun
           const agg = Querries.Get_Date_Querry(_AreaName,_Resolution,_Year,_Month,_Day)
           let cursor = collection.aggregate(agg)
     
-           cursor.toArray((error, result) => {
-            if(error) {
-                return res.status(500).send(error);
-            }
-            if(result.length==0) {
-              return res.status(403).json({
-                  error:'Error 403 : No data'
-                  });
-              } 
-            res.send(result);
-        });
+/* send a csv response here */
+    if(req.query.format=='csv'){
+      res.setHeader('Content-Type', 'text/csv');
+      //res.setHeader('Content-Disposition', 'attachment; filename=\"' + 'download-' + Date.now() + '.csv\"');
+     
+      let fields = ['Source', 'Dataset','AreaName',"AreaTypeCode","MapCode","ResolutionCode","Year",
+                  "Month","Day","DateTimeUTC","DayAheadTotalLoadForecastValue","ActualTotalLoadValue"];//all field names
+      
+     let json2csvParser = new Parser({ fields });
+
+      cursor.toArray((error, result) => {
+        if(result.length==0) {
+          return res.status(403).json({
+              error:'Error 403 : No data'
+              });
+          } 
+        res.send(json2csvParser.parse(result));
+    });
+  }   
+/* JSON response here*/
+  else{ // format will be json or undefined or random string
+        res.setHeader('Content-Type', 'application/json');
+        cursor.toArray((error, result) => {
+          if(result.length==0) {
+            return res.status(403).json({
+                error:'Error 403 : No data'
+                });
+            } 
+          res.send(result);
+  });
+}
+}
     
       
-    }
 
     exports.GetMonth = (req, res) => {
         // simple counter to count all requests for specific user
@@ -57,19 +79,38 @@ else{req.session.counter++;       console.log('request number:',req.session.coun
       
             let cursor = collection.aggregate(agg)
       
-             cursor.toArray((error, result) => {
-              if(error) {
-                  return res.status(500).send(error);
-              }
-              if(result.length==0) {
-                return res.status(403).json({
-                    error:'Error 403 : No data'
-                    });
-                } 
-              res.send(result);
-          });
-      
-      }
+  /* send a csv response here */
+        if(req.query.format=='csv'){
+          res.setHeader('Content-Type', 'text/csv');
+          //res.setHeader('Content-Disposition', 'attachment; filename=\"' + 'download-' + Date.now() + '.csv\"');
+        
+          let fields = ['Source', 'Dataset','AreaName',"AreaTypeCode","MapCode","ResolutionCode","Year",
+                      "Month","Day","DayAheadTotalLoadForecastByDayValue","ActualTotalLoadByDayValue"];//all field names
+          
+        let json2csvParser = new Parser({ fields });
+
+          cursor.toArray((error, result) => {
+            if(result.length==0) {
+              return res.status(403).json({
+                  error:'Error 403 : No data'
+                  });
+              } 
+            res.send(json2csvParser.parse(result));
+        });
+        }   
+  /* JSON response here*/
+        else{ // format will be json or undefined or random string
+        res.setHeader('Content-Type', 'application/json');
+        cursor.toArray((error, result) => {
+          if(result.length==0) {
+            return res.status(403).json({
+                error:'Error 403 : No data'
+                });
+            } 
+          res.send(result);
+        });
+    }
+}
 
 
     exports.GetYear = (req, res) => {
@@ -89,16 +130,35 @@ else{req.session.counter++;       console.log('request number:',req.session.coun
       
             let cursor = collection.aggregate(agg)
       
-             cursor.toArray((error, result) => {
-              if(error) {
-                  return res.status(500).send(error);
-              }
-              if(result.length==0) {
-                return res.status(403).json({
-                    error:'Error 403 : No data'
-                    });
-                } 
-              res.send(result);
-          });
-      
-      }
+        /* send a csv response here */
+        if(req.query.format=='csv'){
+          res.setHeader('Content-Type', 'text/csv');
+          //res.setHeader('Content-Disposition', 'attachment; filename=\"' + 'download-' + Date.now() + '.csv\"');
+        
+          let fields = ['Source', 'Dataset','AreaName',"AreaTypeCode","MapCode","ResolutionCode","Year",
+          "Month","Day","DayAheadTotalLoadForecastByMonthValue","ActualTotalLoadByMonthValue"];//all field names
+          
+        let json2csvParser = new Parser({ fields });
+
+          cursor.toArray((error, result) => {
+            if(result.length==0) {
+              return res.status(403).json({
+                  error:'Error 403 : No data'
+                  });
+              } 
+            res.send(json2csvParser.parse(result));
+        });
+        }   
+        /* JSON response here*/
+        else{ // format will be json or undefined or random string
+        res.setHeader('Content-Type', 'application/json');
+        cursor.toArray((error, result) => {
+          if(result.length==0) {
+            return res.status(403).json({
+                error:'Error 403 : No data'
+                });
+            } 
+          res.send(result);
+        });
+        }
+}
