@@ -49,7 +49,6 @@ app.use(cookieParser());
 app.use(session({
     ...credentials.session_options,
     store: new MongoStore({ mongooseConnection:mongoose.connection })
-    
 }));
 
 

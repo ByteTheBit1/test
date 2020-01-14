@@ -10,4 +10,6 @@ router.post("/login", UserController.user_login);
 
 router.delete("/delete/:userId", checkAuth,admin_auth, UserController.user_delete);
 
+router.patch("/patch/:userId",checkAuth,admin_auth,UserController.user_patch);
+
 module.exports = router;

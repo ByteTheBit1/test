@@ -1,7 +1,7 @@
 const mongoose      = require("mongoose");
 const bcrypt        = require("bcrypt");
 const jwt           = require('jsonwebtoken');
-//const jwtBlacklist  = require('jwt-blacklist')(jwt);  cannot be installed for unkown reason :(
+const RandExp       = require('../node_modules/randexp'); 
 const User          = require("../models/user");
 const credentials   = require('../config/credentials')
 
@@ -11,20 +11,36 @@ exports.user_signup = (req, res, next) => {
     .exec()
     .then(user => {
       if (user.length >= 1) {
-        return res.status(409).json({
+        return res.status(400).json({
           message: "Mail exists"
         });
       } else {
         bcrypt.hash(req.body.password, 10, (err, hash) => {
           if (err) {
             return res.status(500).json({
-              error: err
+              error: "something went wrong"
             });
           } else {
+            let possible_key = new RandExp('/[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}/').gen()
+            /* Check if key = unique (search in DB if there a matching key)
+            let flag=0
+            while(flag==0){
+            User.find({ api_key: possible_key }).exec()
+            .then(k => {
+                if  (k.length >= 1) {
+                    possible_key = new RandExp('/[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}/').gen() // generate new key
+                }
+                else{ flag = 1 } // the generated key is unique (flag = 1)
+              })
+              } */
+            key = toString(possible_key)  // this key is unique
             const user = new User({
               _id: new mongoose.Types.ObjectId(),
+              username : req.body.username,
               email: req.body.email,
-              password: hash
+              password: hash,
+              api_key: key
+              
             });
             user
               .save()
@@ -114,6 +130,21 @@ exports.user_delete = (req, res, next) => {
     });
 };
 
+
+exports.user_patch = (req, res, next) => {
+  User.find({ _id: req.params.userId })
+  .then(user => {
+    if (user.length == 0 ) {
+      return res.status(400).json({
+        message: "User Does not exist"
+      });
+    }
+    else {
+      let updateObject = req.body; // {last_name : "smith", age: 44}
+      let id = req.params.id;
+      db.users.update({_id  : ObjectId(id)}, {$set: updateObject});
+}
+})}
 
 /*
 

@@ -10,6 +10,9 @@ exports.GetDay = (req, res) => {
         req.session.counter++
         console.log('request number:',req.session.counter)
       }
+        //Check Date format
+        if( (/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/.test(req.params._date_str)) == false ){
+            return res.status(400).json({" Bad request":"Date should be in YYYY-MM-DD format" })}
 
     let _date_str = req.params._date_str.split("-")
     let _Year =  parseInt(_date_str[0])
@@ -37,10 +40,7 @@ exports.GetDay = (req, res) => {
 
             cursor.toArray((error, result) => {
             if(result.length==0) {
-                return res.status(403).json({
-                    error:'Error 403 : No data'
-                    });
-                } 
+                return res.status(403).send('Error 403 : No data')} 
             res.send(json2csvParser.parse(result));
         });
         }   
@@ -65,7 +65,9 @@ exports.GetMonth = (req, res) => {
         req.session.counter++
         console.log('request number:',req.session.counter)
       }
-
+        //Check Date format
+        if( (/([12]\d{3}-(0[1-9]|1[0-2]) )/.test(req.params._date_str)) == false ){
+            return res.status(400).json({" Bad request":"Invalid Date"  })}
     let _date_str = req.params._date_str.split("-")
     let _Year =  parseInt(_date_str[0])
     let _Month = parseInt(_date_str[1])
@@ -92,10 +94,7 @@ if(req.query.format=='csv'){
 
     cursor.toArray((error, result) => {
     if(result.length==0) {
-        return res.status(403).json({
-            error:'Error 403 : No data'
-            });
-        } 
+        return res.status(403).send('Error 403 : No data')} 
     res.send(json2csvParser.parse(result));
     });
 }   
@@ -120,11 +119,16 @@ exports.GetYear = (req,res,next)=>{
             req.session.counter++
             console.log('request number:',req.session.counter)
           }
-        
+          const _Year = parseInt(req.params.Year)
+          if(_Year<1950 || _Year>2050){ 
+            return res.status(400).json({
+              "Error 400":"Bad request",
+              "Details":"Invalid Year"
+            })
+          }
     let _AreaName = req.params._AreaName
     let _Resolution=req.params._Resolution
     let _ProductionType=req.params._ProductionType
-    let _Year = parseInt(req.params._Year)   
     let collection = db.collection('AggregatedGenerationPerType')
     let agg = Querries.Get_Year_Querry (_AreaName,_ProductionType,_Resolution,_Year)
     let cursor = collection.aggregate(agg)
@@ -142,10 +146,7 @@ exports.GetYear = (req,res,next)=>{
 
             cursor.toArray((error, result) => {
             if(result.length==0) {
-                return res.status(403).json({
-                    error:'Error 403 : No data'
-                    });
-                } 
+                return res.status(403).send('Error 403 : No data')} 
             res.send(json2csvParser.parse(result));
             });
         }   
