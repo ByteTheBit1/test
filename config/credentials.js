@@ -11,13 +11,14 @@ module.exports = {
         email: "admin@admin.com"
     },
     One_hour :60 * 60 * 1000,       //counts milliseconds   
+    Four_hours: 240 * 60 * 1000,
     session_options:{
         secret: "Another One Bytes the Bit",
         resave: false,
         saveUninitialized: false,
         cookie: {
             secure: false,
-            maxAge: this.One_hour,     // set to 1 hour   
+            maxAge: this.Four_hours,     // set to 1 hour   
             httpOnly: false
     }
     },
