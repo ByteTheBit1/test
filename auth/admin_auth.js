@@ -3,13 +3,19 @@ const credentials   = require('../config/credentials')
 
 module.exports = (req, res, next) => {
       
-        if ( req.session.admin==true  ) {
-            next();
-        }         
-        else{
-            return res.status(401).json({
-                "Error 401": "Not authorized"
-            });
+    User.findOne({where: {username: username}}).then(user => {
+        if (user){
+          if(user.username == credentials.admin_user.email){
+            next()
+          }
+          else{
+            res.sendStatus(401).send("Not authorized")
+          }
         }
+        else{
+          res.sendStatus(400).send("Bad request")
+        }
+      })
     }
-     
+    
+

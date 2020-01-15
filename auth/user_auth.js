@@ -6,7 +6,8 @@ module.exports = (req, res, next) => {
         const token =  req.headers['x-observatory-auth'];
         const decoded = jwt.verify(token, credentials.secret);
         req.userData = decoded;
-        if( req.query.api_key != req.session.api_key || (req.session.admin) ){ 
+        // api key is used for authentication from token and cookie
+        if(  req.userData.api_key!= req.query.api_key ){ 
             return res.status(401).json({
                 401: 'Auth failed',
                 Details: 'Provide a valid api key' })

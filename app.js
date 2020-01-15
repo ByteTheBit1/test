@@ -1,3 +1,6 @@
+/*---------------------------------------------------------------------------------------------------*/
+/*                                  FRAMEWORKS + EXTERNAL FILES                                      */
+/*---------------------------------------------------------------------------------------------------*/
 const express           =   require('express');
 const app               =   express();
 const bodyParser        =   require('body-parser'); // Body parser supports url,json formats,makes data easier to handle
@@ -9,31 +12,22 @@ const mongoose          =   require('mongoose')
 const cors              =   require('cors')
 const session           =   require('express-session')
 const MongoStore        =   require('connect-mongo')(session);
+const rateLimit         =   require("express-rate-limit");
 
 
-app.use(cors())
-
-
-const URL  =   'mongodb+srv://'
-                +credentials.database.username+':'
-                +credentials.database.password+
-                '@cluster0-0pwss.mongodb.net/'
-                +credentials.database.db_name
-                +'?retryWrites=true&w=majority'
+/*---------------------------------------------------------------------------------------------------*/
+/*                                  CONNECT TO DB                                                    */
+/*---------------------------------------------------------------------------------------------------*/
+const link =   credentials.database
+const URL  =   'mongodb+srv://' + link.username + ':'+link.password+
+                '@' + link.cluster+link.db_name + link.options
 
  mongoose.connect(URL,{
      useCreateIndex: true,
      useNewUrlParser: true,
     useUnifiedTopology: true})
 
-
-//Add bodyParser middleware to parse POST request body
-app.use(bodyParser.urlencoded({extended:false}));
-app.use(bodyParser.json());
-
-
-/// MEGALI PROSOXI STO GLOBAL VARIABLE EDO PERA
-db = null // -> global variable to hold the connection 
+ db = null // -> global variable to hold the connection 
 
 MongoClient.connect(URL, 
     {useNewUrlParser: true,useUnifiedTopology:true }, 
@@ -44,16 +38,27 @@ MongoClient.connect(URL,
                         db = client.db('energy') // once connected, assign the connection to the global variable
             })
 
+
+
+/*---------------------------------------------------------------------------------------------------*/
+/*                                  APPLY TO ALL REQUESTS                                            */
+/*---------------------------------------------------------------------------------------------------*/
+//  Add bodyParser middleware to parse POST request body
+app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.json());
+app.use(cors())
 app.use(cookieParser());
-// see -> ./config/credentials for details
 app.use(session({
     ...credentials.session_options,
     store: new MongoStore({ mongooseConnection:mongoose.connection })
 }));
+app.use( rateLimit({ ...credentials.limiter_all }) );   // limit requests : hourly + daily
+app.use( rateLimit({ ...credentials.limiter_all_daily }) );
 
 
-
-//Declare Routers 
+/*---------------------------------------------------------------------------------------------------*/
+/*                                  API ROUTERS                                                      */
+/*---------------------------------------------------------------------------------------------------*/
 const ActualTotalLoadRouter             = require('./routes/ActualTotalLoad');
 const AggregatedGenerationPerTypeRouter = require('./routes/AggregatedGenerationPerType');
 const DayAheadTotalLoadForecastRouter   = require('./routes/DayAheadTotalLoadForecast');
@@ -67,7 +72,9 @@ app.use('/energy/api/user',UserRouter);
 
 
 
-// if u reach this line,no router was able to handle the request,so we return an error message.
+/*---------------------------------------------------------------------------------------------------*/
+/*  if u reach this line,no router was able to handle the request,so we return an error message      */
+/*---------------------------------------------------------------------------------------------------*/
 app.use((req,res,)=>{
     res.status(400).json({
             "error 400": "Bad request"
