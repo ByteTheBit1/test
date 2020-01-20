@@ -3,13 +3,7 @@ const {Parser}           =  require('json2csv')
 
 exports.GetDate= (req, res) => {
 
-  // simple counter to count all requests for specific user
-  if(!req.session.counter){req.session.counter=1}
-  else{
-    req.session.counter++
-    console.log('request number:',req.session.counter)
 
-  }
   if( (/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/.test(req.params._date_str)) == false ){
     return res.status(400).json({"Bad request":"Date should be in YYYY-MM-DD format" })}
     let _AreaName   = req.params.AreaName
@@ -53,12 +47,7 @@ exports.GetDate= (req, res) => {
 }
 
   exports.GetCurrentDate=(req, res) => {
-    // simple counter to count all requests for specific user
-    if(!req.session.counter){req.session.counter=1}
-    else{
-      req.session.counter++
-      console.log('request number:',req.session.counter)
-    }
+
       let _AreaName  = req.params.AreaName
       let _Resolution= req.params.Resolution
       let dateObj   =  new Date();
@@ -104,13 +93,7 @@ exports.GetDate= (req, res) => {
 }
 
   exports.GetMonth = (req, res) => {
-    // simple counter to count all requests for specific user
-  if(!req.session.counter){req.session.counter=1}
-  else{
-    req.session.counter++
-    console.log('request number:',req.session.counter)
 
-  }
   if( (/([12]\d{3}-(0[1-9]|1[0-2]))/.test(req.params._date_str)) == false ){
   return res.status(400).json({" Bad request":"Date should be in YYYY-MM format" })}
     let _date_str   = req.params._date_str.split("-")
@@ -167,10 +150,10 @@ exports.GetDate= (req, res) => {
       })
     }
 
-    const _AreaName=req.params.AreaName
-    const _Resolution=req.params.Resolution
-    const collection = db.collection('ActualTotalLoad')
-    const agg = ActualLoadQuerries.Get_Year_Querry(_AreaName,_Resolution,_Year)
+    const _AreaName   = req.params.AreaName
+    const _Resolution = req.params.Resolution
+    const collection  = db.collection('ActualTotalLoad')
+    const agg    = ActualLoadQuerries.Get_Year_Querry(_AreaName,_Resolution,_Year)
     const cursor = collection.aggregate(agg)
   
  /* send a csv response here */
@@ -184,7 +167,7 @@ exports.GetDate= (req, res) => {
         let json2csvParser = new Parser({ fields });
 
         cursor.toArray((error, result) => {
-          if(result.length==0) {
+          if(result.length == 0) {
             return res.status(403).json({
                 error:'Error 403 : No data'
                 });
@@ -196,7 +179,7 @@ exports.GetDate= (req, res) => {
       else{ // format will be json or undefined or random string
       res.setHeader('Content-Type', 'application/json');
       cursor.toArray((error, result) => {
-        if(result.length==0) {
+        if(result.length == 0) {
           return res.status(403).send('Error 403 : No data')} 
         res.send(result);
         });

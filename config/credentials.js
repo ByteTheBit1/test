@@ -28,11 +28,5 @@ module.exports = {
         useCreateIndex: true,
         useNewUrlParser: true,
         useUnifiedTopology: true
-    },
-    URL: 'mongodb+srv://'
-        +this.username+':'
-        +this.password+
-        '@cluster0-0pwss.mongodb.net/'
-        +this.database
-        +'?retryWrites=true&w=majority',
+    }
 }
